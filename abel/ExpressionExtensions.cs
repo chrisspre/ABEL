@@ -16,33 +16,33 @@ public static class ExpressionExtensions
 
         public (int, string) Binary(Operator @operator, (int, string) lhs, (int, string) rhs)
         {
-            var (operString, operPrio) = @operator.SymAndPrio();
+            var (operSym, operPrio) = @operator.SymAndPrio();
             string Parens((int, string) pair) => (pair.Item1 >= operPrio) ? pair.Item2 : $"({pair.Item2})";
 
-            return (operPrio, $"{Parens(lhs)} {@operator.Sym()} {Parens(rhs)}");
+            return (operPrio, $"{Parens(lhs)} {operSym} {Parens(rhs)}");
         }
     }
 
 
 #pragma warning disable CS8524
-    // CS8524 warns on unnamed enum values, whereas CS8509 wanrs about actuall missing enum values
+    // CS8524 warns on unnamed enum values, which requires to add a default (_ => ...) case
+    // which then in turn hides if a named enum value is not implemented
     private static (string, int) SymAndPrio(this Operator op) => op switch
     {
         Operator.Mul => ("*", 8),
         Operator.Add => ("+", 7),
         Operator.Lt => ("<", 4),
         Operator.Lte => ("<=", 4),
-        // _ => throw new ArgumentException("unnamed enum value")
     };
 
 #pragma warning restore format
 
-    public static string Sym(this Operator op) => op switch
-    {
-        Operator.Add => "+",
-        Operator.Mul => "*",
-        Operator.Lt => "<",
-        Operator.Lte => "<=",
-        _ => throw new ArgumentException("unnamed enum value")
-    };
+    // public static string Sym(this Operator op) => op switch
+    // {
+    //     Operator.Add => "+",
+    //     Operator.Mul => "*",
+    //     Operator.Lt => "<",
+    //     Operator.Lte => "<=",
+    //     _ => throw new ArgumentException("unnamed enum value")
+    // };
 }
