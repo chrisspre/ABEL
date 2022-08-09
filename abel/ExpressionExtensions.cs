@@ -5,34 +5,44 @@ public static class ExpressionExtensions
 {
     public static string Display(this Expression expression)
     {
-        (var p, var s) = expression.Fold(
-            i => (9, i.ToString()),
-            v => (9, v),
-            Combine
-        );
-        return s;
+        return expression.Fold(new DisplayFold()).Item2;
+    }
+
+    private class DisplayFold : Expression.IFold<(int, string)>
+    {
+        public (int, string) Integer(int value) => (9, value.ToString());
+
+        public (int, string) String(string value) => (9, value);
+
+        public (int, string) Binary(Operator @operator, (int, string) lhs, (int, string) rhs)
+        {
+            var (operString, operPrio) = @operator.SymAndPrio();
+            string Parens((int, string) pair) => (pair.Item1 >= operPrio) ? pair.Item2 : $"({pair.Item2})";
+
+            return (operPrio, $"{Parens(lhs)} {@operator.Sym()} {Parens(rhs)}");
+        }
     }
 
 
-    private static (int, string) Combine(Operator oper, (int, string) lhs, (int, string) rhs)
+#pragma warning disable CS8524
+    // CS8524 warns on unnamed enum values, whereas CS8509 wanrs about actuall missing enum values
+    private static (string, int) SymAndPrio(this Operator op) => op switch
     {
-        var (operString, operPrio) = oper.SymAndPrio();
-        string Parens((int, string) pair) => (pair.Item1 >= operPrio) ? pair.Item2 : $"({pair.Item2})";
-
-        return (operPrio, $"{Parens(lhs)} {oper.Sym()} {Parens(rhs)}");
-    }
-
-    public static (string, int) SymAndPrio(this Operator op) => op switch
-    {
-        Operator.Add => ("+", 7),
         Operator.Mul => ("*", 8),
-        _ => throw new ArgumentException("unnamed enum value")
+        Operator.Add => ("+", 7),
+        Operator.Lt => ("<", 4),
+        Operator.Lte => ("<=", 4),
+        // _ => throw new ArgumentException("unnamed enum value")
     };
+
+#pragma warning restore format
 
     public static string Sym(this Operator op) => op switch
     {
         Operator.Add => "+",
         Operator.Mul => "*",
+        Operator.Lt => "<",
+        Operator.Lte => "<=",
         _ => throw new ArgumentException("unnamed enum value")
     };
 }

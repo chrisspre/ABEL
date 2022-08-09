@@ -1,7 +1,7 @@
 namespace abel;
 
 
-public enum Operator { Add, Mul }
+public enum Operator { Add, Mul, Lt, Lte }
 
 
 public abstract record Expression
@@ -15,30 +15,37 @@ public abstract record Expression
         Binary,
     }
 
-    public abstract T Fold<T>(Func<int, T> NumberFn, Func<string, T> StringFn, Func<Operator, T, T, T> BinaryFn);
+    // public abstract T Fold<T>(IFold<T> fold);
+    public interface IFold<T>
+    {
+        T Integer(int value);
+        T String(string value);
+        T Binary(Operator @operator, T lhs, T rhs);
+    }
+
+    public abstract T Fold<T>(IFold<T> fold);
 
     public record Integer(int Value) : Expression(ExpressionKind.Integer)
     {
-        public override T Fold<T>(Func<int, T> NumberFn, Func<string, T> StringFn, Func<Operator, T, T, T> BinaryFn)
+        public override T Fold<T>(IFold<T> fold)
         {
-            return NumberFn(this.Value);
+            return fold.Integer(this.Value);
         }
     }
 
     public record String(string Value) : Expression(ExpressionKind.String)
     {
-        public override T Fold<T>(Func<int, T> NumberFn, Func<string, T> StringFn, Func<Operator, T, T, T> BinaryFn)
+        public override T Fold<T>(IFold<T> fold)
         {
-            return StringFn(this.Value);
+            return fold.String(this.Value);
         }
     }
 
     public record Binary(Operator Op, Expression Lhs, Expression Rhs) : Expression(ExpressionKind.Binary)
     {
-        public override T Fold<T>(Func<int, T> NumberFn, Func<string, T> StringFn, Func<Operator, T, T, T> BinaryFn)
+        public override T Fold<T>(IFold<T> fold)
         {
-            return BinaryFn(this.Op, this.Lhs.Fold(NumberFn, StringFn, BinaryFn), this.Rhs.Fold(NumberFn, StringFn, BinaryFn));
+            return fold.Binary(this.Op, this.Lhs.Fold(fold), this.Rhs.Fold(fold));
         }
     }
-
 }

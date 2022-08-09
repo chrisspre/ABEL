@@ -13,37 +13,38 @@ public abstract record ExpressionType
         Record,
     }
 
-    public abstract T Fold<T>(Func<T> BooleanFn, Func<T> IntegerFn, Func<T> StringFn, Func<IReadOnlyDictionary<string, T>, T> RecordFn);
+    public abstract T Fold<T>(Folder<T> folder);
 
+    public interface Folder<T> { T Boolean(); T Integer(); T String(); T Record(IReadOnlyDictionary<string, T> fields); }
     public record Boolean() : ExpressionType(ExpressionTypeKind.Boolean)
     {
-        public override T Fold<T>(Func<T> BooleanFn, Func<T> IntegerFn, Func<T> StringFn, Func<IReadOnlyDictionary<string, T>, T> RecordFn)
+        public override T Fold<T>(Folder<T> folder)
         {
-            return BooleanFn();
+            return folder.Boolean();
         }
     }
 
     public record Integer() : ExpressionType(ExpressionTypeKind.Integer)
     {
-        public override T Fold<T>(Func<T> BooleanFn, Func<T> IntegerFn, Func<T> StringFn, Func<IReadOnlyDictionary<string, T>, T> RecordFn)
+        public override T Fold<T>(Folder<T> folder)
         {
-            return IntegerFn();
+            return folder.Integer();
         }
     }
 
     public record String() : ExpressionType(ExpressionTypeKind.String)
     {
-        public override T Fold<T>(Func<T> BooleanFn, Func<T> IntegerFn, Func<T> StringFn, Func<IReadOnlyDictionary<string, T>, T> RecordFn)
+        public override T Fold<T>(Folder<T> folder)
         {
-            return StringFn();
+            return folder.String();
         }
     }
 
     public record Record(IReadOnlyDictionary<string, ExpressionType> Fields) : ExpressionType(ExpressionTypeKind.Record)
     {
-        public override T Fold<T>(Func<T> BooleanFn, Func<T> IntegerFn, Func<T> StringFn, Func<IReadOnlyDictionary<string, T>, T> RecordFn)
+        public override T Fold<T>(Folder<T> folder)
         {
-            return RecordFn(this.Fields.ToDictionary(p => p.Key, p => p.Value.Fold(BooleanFn, IntegerFn, StringFn, RecordFn)));
+            return folder.Record(this.Fields.ToDictionary(p => p.Key, p => p.Value.Fold(folder)));
         }
 
         protected override bool PrintMembers(StringBuilder builder)
