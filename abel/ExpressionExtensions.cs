@@ -1,7 +1,6 @@
 namespace abel;
 
-
-public static class ExpressionExtensions
+public static class ExpressionExtenstions
 {
     public static string Display(this Expression expression)
     {
@@ -12,7 +11,7 @@ public static class ExpressionExtensions
     {
         public (int, string) Integer(int value) => (9, value.ToString());
 
-        public (int, string) String(string value) => (9, value);
+        public (int, string) String(string value) => (9, $"\"{value}\"");
 
         public (int, string) Binary(Operator @operator, (int, string) lhs, (int, string) rhs)
         {
@@ -35,6 +34,6 @@ public static class ExpressionExtensions
         Operator.Lt => ("<", 4),
         Operator.Lte => ("<=", 4),
     };
-#pragma warning restore format
+#pragma warning restore CS8524
 
 }
