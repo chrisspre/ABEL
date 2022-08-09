@@ -26,7 +26,8 @@ public static class ExpressionExtensions
 
 #pragma warning disable CS8524
     // CS8524 warns on unnamed enum values, which requires to add a default (_ => ...) case
-    // which then in turn hides if a named enum value is not implemented
+    // which then in turn hides if a named enum value is not implemented. 
+    // Disabling it lights up CS8509 which warns on missing named enums. 
     private static (string, int) SymAndPrio(this Operator op) => op switch
     {
         Operator.Mul => ("*", 8),
@@ -34,15 +35,6 @@ public static class ExpressionExtensions
         Operator.Lt => ("<", 4),
         Operator.Lte => ("<=", 4),
     };
-
 #pragma warning restore format
 
-    // public static string Sym(this Operator op) => op switch
-    // {
-    //     Operator.Add => "+",
-    //     Operator.Mul => "*",
-    //     Operator.Lt => "<",
-    //     Operator.Lte => "<=",
-    //     _ => throw new ArgumentException("unnamed enum value")
-    // };
 }
