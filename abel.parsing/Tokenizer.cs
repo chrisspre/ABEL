@@ -51,11 +51,11 @@ public class Tokenizer
                     throw new TokenizerException($"unkown matching group {matchingGroup.Name}");
                 }
             }
-            pos = Advance(pos, m.Value);
+            pos = UpdatedPosition(pos, m.Value);
         }
     }
 
-    private (int Ln, int Col) Advance((int Ln, int Col) pos, string text)
+    private (int Ln, int Col) UpdatedPosition((int Ln, int Col) pos, string text)
     {
         for (int i = 0; i < text.Length; i++)
         {
