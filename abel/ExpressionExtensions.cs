@@ -21,8 +21,14 @@ public static class ExpressionExtenstions
 
         public (int, string) Integer(Expression.Integer integer) => (9, integer.Value.ToString());
 
+
         public (int, string) String(Expression.String @string) => (9, $"\"{@string.Value.ToString()}\"");
+
+        public (int, string) MemberGet(Expression.MemberGet get, (int, string) obj) => (9, obj.Item2 + "." + get.Member);
+
+        public (int, string) Self(Expression.Self self) => (9, "self");
     }
+
 
 #pragma warning disable CS8524
     // CS8524 warns on unnamed enum values, which requires to add a default (_ => ...) case

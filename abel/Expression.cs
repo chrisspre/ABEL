@@ -13,7 +13,9 @@ public abstract record Expression
         Integer,
         String,
         Binary,
-        Boolean
+        Boolean,
+        MemberGet,
+        Self
     }
 
     // public abstract T Fold<T>(IFold<T> fold);
@@ -23,6 +25,8 @@ public abstract record Expression
         T String(String @string);
         T Boolean(Boolean boolean);
         T Binary(Binary binary, T lhs, T rhs);
+        T Self(Self self);
+        T MemberGet(MemberGet get, T obj);
     }
 
     public abstract T Fold<T>(IFold<T> fold);
@@ -56,6 +60,22 @@ public abstract record Expression
         public override T Fold<T>(IFold<T> fold)
         {
             return fold.Binary(this, this.Lhs.Fold(fold), this.Rhs.Fold(fold));
+        }
+    }
+
+    public record Self() : Expression(ExpressionKind.Self)
+    {
+        public override T Fold<T>(IFold<T> fold)
+        {
+            return fold.Self(this);
+        }
+    }
+
+    public record MemberGet(Expression Obj, string Member) : Expression(ExpressionKind.MemberGet)
+    {
+        public override T Fold<T>(IFold<T> fold)
+        {
+            return fold.MemberGet(this, this.Obj.Fold(fold));
         }
     }
 }

@@ -1,39 +1,57 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using abel;
 using abel.parsing;
 
-// record User(string First, string Last, int Age);
-
-
+record User(string First, string Last, int Age);
 
 class Program
 {
     private static void Main(string[] args)
     {
-        DemoTokenizer();
+        // DemoTokenizer();
 
-        // DemoExpressionTrees();
+        DemoExpressionTrees();
+
+        DemoEvaluation();
     }
+
 
     private static void DemoExpressionTrees()
     {
+        var inputType = ExpressionType.Record.Empty;
+        var inputData = new Dictionary<string, object>();
+
+        ShowExpressionType(inputType);
+
         var e = new Expression.Binary(Operator.Mul,
                     new Expression.Binary(Operator.Add,
                         new Expression.Integer(2),
                         new Expression.String("x")),
                     new Expression.String("y"));
-        ShowExpression(e);
+        ShowExpression(e, inputType, inputData);
 
         var e2 = new Expression.Binary(Operator.Add, new Expression.Binary(Operator.Mul, new Expression.Integer(2), new Expression.Integer(3)), new Expression.Integer(4));
-        ShowExpression(e2);
+        ShowExpression(e2, inputType, inputData);
+    }
 
-
-        var t = new ExpressionType.Record(new Dictionary<string, ExpressionType>
+    private static void DemoEvaluation()
+    {
+        var inputType = new ExpressionType.Record
         {
-            ["first"] = new ExpressionType.String(),
-            ["age"] = new ExpressionType.Integer()
-        });
-        ShowExpressionType(t);
+            ["First"] = new ExpressionType.String(),
+            ["Age"] = new ExpressionType.Integer()
+        };
+
+        var inputData = new User("Fred", "Flintstone", 23).ToRecord(inputType);
+
+        var e = new Expression.Binary(
+                Operator.Lte,
+                new Expression.Integer(18),
+                new Expression.MemberGet(new Expression.Self(), "Age")
+        );
+
+        ShowExpression(e, inputType, inputData);
     }
 
     private static void DemoTokenizer()
@@ -51,21 +69,25 @@ class Program
         System.Console.WriteLine("time: {0}", sw.Elapsed);
     }
 
-    private static void ShowExpression(Expression.Binary e)
+    private static void ShowExpression(Expression.Binary e, ExpressionType.Record inputType, IReadOnlyDictionary<string, object> input)
     {
+        Console.WriteLine("##########################");
+
         Console.WriteLine("debug:    {0}", e);
         Console.WriteLine("display:  {0}", e.Display());
-        if (e.TryGetExpressionType(out var type, out var error))
+        if (e.TryGetExpressionType(inputType, out var type, out var error))
         {
             Console.WriteLine("type:     {0}", type);
+
+            Console.WriteLine("eval:     {0}", e.Evaluate(input));
         }
         else
         {
-            Console.WriteLine($"can't infer type: {error}");
+            Console.WriteLine($"type:     can't infer type: {error}");
+            // don't attempt evaluation when the types are wrong.
         }
         Console.WriteLine();
     }
-
 
     private static void ShowExpressionType(ExpressionType t)
     {
@@ -74,4 +96,3 @@ class Program
         Console.WriteLine();
     }
 }
-

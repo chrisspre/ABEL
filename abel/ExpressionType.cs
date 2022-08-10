@@ -44,8 +44,24 @@ public abstract record ExpressionType
         }
     }
 
-    public record Record(IReadOnlyDictionary<string, ExpressionType> Fields) : ExpressionType(ExpressionTypeKind.Record)
+    public record Record() : ExpressionType(ExpressionTypeKind.Record)
     {
+        private readonly Dictionary<string, ExpressionType> fields = new Dictionary<string, ExpressionType>();
+
+        public static Record Empty = new Record();
+
+        public IReadOnlyDictionary<string, ExpressionType> Fields => fields;
+        public Record(IReadOnlyDictionary<string, ExpressionType> fields) : this()
+        {
+            this.fields = fields.ToDictionary(p => p.Key, p => p.Value);
+        }
+
+        public ExpressionType this[string name]
+        {
+            get => Fields[name];
+            init => fields[name] = value;
+        }
+
         public override T Fold<T>(IFold<T> folder)
         {
             return folder.Record(this.Fields.ToDictionary(p => p.Key, p => p.Value.Fold(folder)));

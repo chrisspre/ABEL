@@ -2,13 +2,19 @@ namespace abel;
 
 public static class ExpressionEvaluator
 {
-    public static object Evaluate(this Expression expression)
+    public static object Evaluate(this Expression expression, IReadOnlyDictionary<string, object> root)
     {
-        return expression.Fold(new EvaluateFold());
+        return expression.Fold(new EvaluateFold(root));
     }
 
     private class EvaluateFold : Expression.IFold<object>
     {
+        private IReadOnlyDictionary<string, object> root;
+
+        public EvaluateFold(IReadOnlyDictionary<string, object> root)
+        {
+            this.root = root;
+        }
 
         public object Integer(Expression.Integer integer) => integer.Value;
 
@@ -33,6 +39,22 @@ public static class ExpressionEvaluator
             Operator.Lte => (a, b) => ((int)a) <= ((int)b),
         };
 
+        public object Self(Expression.Self self)
+        {
+            return root;
+        }
 #pragma warning restore CS8524
+
+        public object MemberGet(Expression.MemberGet get, object obj)
+        {
+            if (obj is IReadOnlyDictionary<string, object> dict)
+            {
+                if (dict.TryGetValue(get.Member, out var val))
+                {
+                    return val;
+                }
+            }
+            throw new InvalidCastException($"object {obj} doesn't have a property named {get.Member}"); // TODO: custom exception
+        }
     }
 }
