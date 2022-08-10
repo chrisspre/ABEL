@@ -3,7 +3,22 @@
 namespace abel.parsing;
 
 
-public sealed record Token(string Kind, string Value, (int, int) Position)
+
+public enum TokenKind
+{
+    Unkown,
+    Whitespace,
+    Ident,
+    Integer,
+
+    // names follow unicode naming for single character tokens
+    PlusSign, // https://unicodeplus.com/U+002B
+    Asterisk, // https://unicodeplus.com/U+002A
+    LeftParenthesis, // https://unicodeplus.com/U+0028
+    RightParenthesis, // https://unicodeplus.com/U+0029
+}
+
+public sealed record Token(TokenKind Kind, string Value, (int, int) Position)
 {
     private bool PrintMembers(StringBuilder builder)
     {

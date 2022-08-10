@@ -2,32 +2,36 @@ using System.Text.RegularExpressions;
 
 namespace abel.parsing;
 
+
+
 public class Tokenizer
 {
-    private Regex regex;
+    private readonly Regex regex;
+
+    private readonly Dictionary<string, TokenKind> TokenNameMap;
+
+    private readonly (string Name, string Regex)[] Tokens;
+
+    const RegexOptions Options = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.ExplicitCapture;
+
 
     public Tokenizer()
     {
+        this.TokenNameMap = Enum.GetValues<TokenKind>().ToDictionary(k => Enum.GetName<TokenKind>(k)!, k => k);
         this.Tokens = new (string Name, string Regex)[] {
             ("Whitespace", "\\s+"),
             ("Ident", "[_a-zA-Z][_a-zA-Z0-9]*"),
             ("Integer", "[0-9]+"),
             ("PlusSign", "[+]"),
             ("Asterisk", "[*]"),
-            ("OpenParenthesis", "[(]"),
-            ("CloseParenthesis", "[)]"),
+            ("LeftParenthesis", "[(]"),
+            ("RightParenthesis", "[)]"),
             ("Unkown", ".+"),
         };
 
         var regex = "(" + string.Join("|", from token in Tokens select $"(?<{token.Name}>{token.Regex})") + ")";
-        Console.Error.WriteLine(regex);
         this.regex = new Regex(regex, Options);
     }
-
-    const RegexOptions Options = RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.ExplicitCapture;
-
-    private readonly (string Name, string Regex)[] Tokens;
-
 
     public IEnumerable<Token> Tokenize(string input, bool ignoreWhitespace = true)
     {
@@ -38,7 +42,14 @@ public class Tokenizer
             var matchingGroup = m.Groups.Cast<Group>().Single(g => g.Success && g.Name != "0");
             if (!(ignoreWhitespace && matchingGroup.Name == "Whitespace"))
             {
-                yield return new Token(matchingGroup.Name, matchingGroup.Value, pos);
+                if (TokenNameMap.TryGetValue(matchingGroup.Name, out var kind))
+                {
+                    yield return new Token(kind, matchingGroup.Value, pos);
+                }
+                else
+                {
+                    throw new TokenizerException($"unkown matching group {matchingGroup.Name}");
+                }
             }
             pos = Advance(pos, m.Value);
         }
