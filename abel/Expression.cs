@@ -19,10 +19,10 @@ public abstract record Expression
     // public abstract T Fold<T>(IFold<T> fold);
     public interface IFold<T>
     {
-        T Integer(int value);
-        T String(string value);
-        T Boolean(bool value);
-        T Binary(Operator @operator, T lhs, T rhs);
+        T Integer(Integer integer);
+        T String(String @string);
+        T Boolean(Boolean boolean);
+        T Binary(Binary binary, T lhs, T rhs);
     }
 
     public abstract T Fold<T>(IFold<T> fold);
@@ -31,7 +31,7 @@ public abstract record Expression
     {
         public override T Fold<T>(IFold<T> fold)
         {
-            return fold.Integer(this.Value);
+            return fold.Integer(this);
         }
     }
 
@@ -39,7 +39,7 @@ public abstract record Expression
     {
         public override T Fold<T>(IFold<T> fold)
         {
-            return fold.Boolean(this.Value);
+            return fold.Boolean(this);
         }
     }
 
@@ -47,7 +47,7 @@ public abstract record Expression
     {
         public override T Fold<T>(IFold<T> fold)
         {
-            return fold.String(this.Value);
+            return fold.String(this);
         }
     }
 
@@ -55,7 +55,7 @@ public abstract record Expression
     {
         public override T Fold<T>(IFold<T> fold)
         {
-            return fold.Binary(this.Op, this.Lhs.Fold(fold), this.Rhs.Fold(fold));
+            return fold.Binary(this, this.Lhs.Fold(fold), this.Rhs.Fold(fold));
         }
     }
 }

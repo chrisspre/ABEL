@@ -10,15 +10,15 @@ public static class ExpressionEvaluator
     private class EvaluateFold : Expression.IFold<object>
     {
 
-        public object Integer(int value) => value;
+        public object Integer(Expression.Integer integer) => integer.Value;
 
-        public object String(string value) => value;
+        public object String(Expression.String @string) => @string.Value;
 
-        public object Boolean(bool value) => value;
+        public object Boolean(Expression.Boolean boolean) => boolean.Value;
 
-        public object Binary(Operator @operator, object lhs, object rhs)
+        public object Binary(Expression.Binary binary, object lhs, object rhs)
         {
-            var fn = GetOperFunc(@operator);
+            var fn = GetOperFunc(binary.Op);
 
             return fn(lhs, rhs);
         }

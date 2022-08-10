@@ -9,21 +9,20 @@ public static class ExpressionExtenstions
 
     private class DisplayFold : Expression.IFold<(int, string)>
     {
-        public (int, string) Integer(int value) => (9, value.ToString());
-
-        public (int, string) String(string value) => (9, $"\"{value}\"");
-
-        public (int, string) Boolean(bool value) => (9, $"{value}");
-
-        public (int, string) Binary(Operator @operator, (int, string) lhs, (int, string) rhs)
+        public (int, string) Binary(Expression.Binary binary, (int, string) lhs, (int, string) rhs)
         {
-            var (operSym, operPrio) = @operator.SymAndPrio();
+            var (operSym, operPrio) = binary.Op.SymAndPrio();
             string Parens((int, string) pair) => (pair.Item1 >= operPrio) ? pair.Item2 : $"({pair.Item2})";
 
             return (operPrio, $"{Parens(lhs)} {operSym} {Parens(rhs)}");
         }
-    }
 
+        public (int, string) Boolean(Expression.Boolean boolean) => (9, boolean.Value.ToString());
+
+        public (int, string) Integer(Expression.Integer integer) => (9, integer.Value.ToString());
+
+        public (int, string) String(Expression.String @string) => (9, $"\"{@string.Value.ToString()}\"");
+    }
 
 #pragma warning disable CS8524
     // CS8524 warns on unnamed enum values, which requires to add a default (_ => ...) case

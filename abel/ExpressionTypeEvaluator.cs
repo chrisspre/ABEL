@@ -1,10 +1,18 @@
 namespace abel;
 
+using System.Diagnostics.CodeAnalysis;
 using K = ExpressionType.ExpressionTypeKind;
 using O = Operator;
 
 public static class ExpressionTypeEvaluator
 {
+    public static bool TryGetExpressionType(this Expression expression, [MaybeNullWhen(false)] out ExpressionType type, [MaybeNullWhen(true)] out string error)
+    {
+        try { type = expression.Fold(new TypeInferenceFold()); error = null; return true; }
+        catch (TypeInferenceException ex) { type = default; error = ex.Message; return false; }
+    }
+
+    [Obsolete("use TryGetExpressionType")]
     public static ExpressionType ExpressionType(this Expression expression)
     {
         return expression.Fold(new TypeInferenceFold());
@@ -13,18 +21,15 @@ public static class ExpressionTypeEvaluator
     private class TypeInferenceFold : Expression.IFold<ExpressionType>
     {
 
-        public ExpressionType Integer(int value) => new ExpressionType.Integer();
+        public ExpressionType Integer(Expression.Integer integer) => new ExpressionType.Integer();
 
-        public ExpressionType String(string value) => new ExpressionType.String();
+        public ExpressionType String(Expression.String @string) => new ExpressionType.String();
 
-        public ExpressionType Boolean(bool value) => new ExpressionType.Boolean();
+        public ExpressionType Boolean(Expression.Boolean boolean) => new ExpressionType.Boolean();
 
-        public ExpressionType Binary(Operator @operator, ExpressionType lhs, ExpressionType rhs)
+        public ExpressionType Binary(Expression.Binary binary, ExpressionType lhs, ExpressionType rhs)
         {
-
-#pragma warning disable CS8524
-            // disable CS8524 so that CS8509 can detect missing named enums
-            return (lhs.Kind, @operator, rhs.Kind) switch
+            return (lhs.Kind, binary.Op, rhs.Kind) switch
             {
                 (K.Integer, O.Mul, K.Integer) => new ExpressionType.Integer(),
 
@@ -36,12 +41,18 @@ public static class ExpressionTypeEvaluator
                 (K.Integer, O.Lte, K.Integer) => new ExpressionType.Boolean(),
                 (K.String, O.Lte, K.String) => new ExpressionType.Boolean(),
 
-                _ => throw new NotSupportedException($"{lhs.Kind} {@operator} {rhs.Kind}")
-                // TODO! better error handling. instead of throwing exception this should return an error value
+                _ => throw new TypeInferenceException($"operator {binary.Op} can't be used with operands of type {lhs.Kind}  and {rhs.Kind} in {binary.Display()}", binary)
             };
-
-#pragma warning restore CS8524
         }
     }
+}
 
+public class TypeInferenceException : Exception
+{
+    public TypeInferenceException(string message, Expression e) : base(message)
+    {
+        Expression = e;
+    }
+
+    public Expression Expression { get; }
 }
