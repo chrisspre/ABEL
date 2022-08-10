@@ -1,4 +1,5 @@
 ﻿using abel;
+using abel.parsing;
 
 // record User(string First, string Last, int Age);
 
@@ -8,6 +9,16 @@ class Program
 {
     private static void Main(string[] args)
     {
+        var tokenizer = new Tokenizer();
+
+        foreach (var token in tokenizer.Tokenize("12    + \r\n   (222 * 33)"))
+        {
+            Console.WriteLine(token);
+        }
+
+        Environment.Exit(0);
+
+
 
         var e = new Expression.Binary(Operator.Mul,
             new Expression.Binary(Operator.Add,

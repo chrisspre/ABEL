@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\abel\abel.csproj" />
+    <ProjectReference Include="..\abel.parsing\abel.parsing.csproj" />
   </ItemGroup>
 
 
