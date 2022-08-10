@@ -7,7 +7,7 @@ public static class TypeExtensions
         return type.Fold(new DisplayFolder());
     }
 
-    private class DisplayFolder : ExpressionType.Folder<string>
+    private class DisplayFolder : ExpressionType.IFold<string>
     {
         public string Boolean() => "Boolean";
 

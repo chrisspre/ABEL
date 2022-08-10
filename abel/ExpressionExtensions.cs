@@ -13,6 +13,8 @@ public static class ExpressionExtenstions
 
         public (int, string) String(string value) => (9, $"\"{value}\"");
 
+        public (int, string) Boolean(bool value) => (9, $"{value}");
+
         public (int, string) Binary(Operator @operator, (int, string) lhs, (int, string) rhs)
         {
             var (operSym, operPrio) = @operator.SymAndPrio();

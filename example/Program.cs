@@ -1,6 +1,8 @@
 ﻿using abel;
 
-internal class Program
+record User(string First, string Last, int )
+
+class Program
 {
     private static void Main(string[] args)
     {
@@ -13,12 +15,14 @@ internal class Program
 
         Console.WriteLine("debug:    {0}", e);
         Console.WriteLine("display:  {0}", e.Display());
+        Console.WriteLine("type:     {0}", e.ExpressionType());
         Console.WriteLine();
 
         e = new Expression.Binary(Operator.Add, new Expression.Binary(Operator.Mul, new Expression.Integer(2), new Expression.Integer(3)), new Expression.Integer(4));
 
         Console.WriteLine("debug:    {0}", e);
         Console.WriteLine("display:  {0}", e.Display());
+        Console.WriteLine("type:     {0}", e.ExpressionType());
         Console.WriteLine("evaluate: {0}", e.Evaluate());
         Console.WriteLine();
 

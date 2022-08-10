@@ -3,7 +3,7 @@ using System.Text;
 
 public abstract record ExpressionType
 {
-    protected ExpressionType(ExpressionTypeKind Kind) { }
+    protected ExpressionType(ExpressionTypeKind Kind) { this.Kind = Kind; }
 
     public enum ExpressionTypeKind
     {
@@ -13,20 +13,24 @@ public abstract record ExpressionType
         Record,
     }
 
-    public abstract T Fold<T>(Folder<T> folder);
+    public ExpressionTypeKind Kind { get; }
 
-    public interface Folder<T> { T Boolean(); T Integer(); T String(); T Record(IReadOnlyDictionary<string, T> fields); }
+    public abstract T Fold<T>(IFold<T> fold);
+
+    public interface IFold<T> { T Boolean(); T Integer(); T String(); T Record(IReadOnlyDictionary<string, T> fields); }
+
+
     public record Boolean() : ExpressionType(ExpressionTypeKind.Boolean)
     {
-        public override T Fold<T>(Folder<T> folder)
+        public override T Fold<T>(IFold<T> fold)
         {
-            return folder.Boolean();
+            return fold.Boolean();
         }
     }
 
     public record Integer() : ExpressionType(ExpressionTypeKind.Integer)
     {
-        public override T Fold<T>(Folder<T> folder)
+        public override T Fold<T>(IFold<T> folder)
         {
             return folder.Integer();
         }
@@ -34,7 +38,7 @@ public abstract record ExpressionType
 
     public record String() : ExpressionType(ExpressionTypeKind.String)
     {
-        public override T Fold<T>(Folder<T> folder)
+        public override T Fold<T>(IFold<T> folder)
         {
             return folder.String();
         }
@@ -42,7 +46,7 @@ public abstract record ExpressionType
 
     public record Record(IReadOnlyDictionary<string, ExpressionType> Fields) : ExpressionType(ExpressionTypeKind.Record)
     {
-        public override T Fold<T>(Folder<T> folder)
+        public override T Fold<T>(IFold<T> folder)
         {
             return folder.Record(this.Fields.ToDictionary(p => p.Key, p => p.Value.Fold(folder)));
         }

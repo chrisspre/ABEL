@@ -13,6 +13,7 @@ public abstract record Expression
         Integer,
         String,
         Binary,
+        Boolean
     }
 
     // public abstract T Fold<T>(IFold<T> fold);
@@ -20,6 +21,7 @@ public abstract record Expression
     {
         T Integer(int value);
         T String(string value);
+        T Boolean(bool value);
         T Binary(Operator @operator, T lhs, T rhs);
     }
 
@@ -30,6 +32,14 @@ public abstract record Expression
         public override T Fold<T>(IFold<T> fold)
         {
             return fold.Integer(this.Value);
+        }
+    }
+
+    public record Boolean(bool Value) : Expression(ExpressionKind.Boolean)
+    {
+        public override T Fold<T>(IFold<T> fold)
+        {
+            return fold.Boolean(this.Value);
         }
     }
 

@@ -14,6 +14,8 @@ public static class ExpressionEvaluator
 
         public object String(string value) => value;
 
+        public object Boolean(bool value) => value;
+
         public object Binary(Operator @operator, object lhs, object rhs)
         {
             var fn = GetOperFunc(@operator);
