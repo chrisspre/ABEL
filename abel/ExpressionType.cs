@@ -10,6 +10,8 @@ public abstract record ExpressionType
         Boolean,
         Integer,
         String,
+        DateTime,
+        Period,
         Record,
     }
 
@@ -17,8 +19,7 @@ public abstract record ExpressionType
 
     public abstract T Fold<T>(IFold<T> fold);
 
-    public interface IFold<T> { T Boolean(); T Integer(); T String(); T Record(IReadOnlyDictionary<string, T> fields); }
-
+    public interface IFold<T> { T Boolean(); T Integer(); T String(); T DateTime(); T Period(); T Record(IReadOnlyDictionary<string, T> fields); }
 
     public record Boolean() : ExpressionType(ExpressionTypeKind.Boolean)
     {
@@ -30,17 +31,33 @@ public abstract record ExpressionType
 
     public record Integer() : ExpressionType(ExpressionTypeKind.Integer)
     {
-        public override T Fold<T>(IFold<T> folder)
+        public override T Fold<T>(IFold<T> fold)
         {
-            return folder.Integer();
+            return fold.Integer();
         }
     }
 
     public record String() : ExpressionType(ExpressionTypeKind.String)
     {
-        public override T Fold<T>(IFold<T> folder)
+        public override T Fold<T>(IFold<T> fold)
         {
-            return folder.String();
+            return fold.String();
+        }
+    }
+
+    public record DateTime() : ExpressionType(ExpressionTypeKind.DateTime)
+    {
+        public override T Fold<T>(IFold<T> fold)
+        {
+            return fold.DateTime();
+        }
+    }
+
+    public record Period() : ExpressionType(ExpressionTypeKind.Period)
+    {
+        public override T Fold<T>(IFold<T> fold)
+        {
+            return fold.Period();
         }
     }
 

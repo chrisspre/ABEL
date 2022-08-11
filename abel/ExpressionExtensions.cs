@@ -24,6 +24,10 @@ public static class ExpressionExtenstions
 
         public (int, string) String(Expression.String @string) => (9, $"\"{@string.Value.ToString()}\"");
 
+        public (int, string) DateTime(Expression.DateTime dateTime) => (9, $"`{@dateTime.Value.ToString()}`");
+
+        public (int, string) Period(Expression.Period period) => (9, $"`{period.Value.ToString()}`");
+
         public (int, string) MemberGet(Expression.MemberGet get, (int, string) obj) => (9, obj.Item2 + "." + get.Member);
 
         public (int, string) Self(Expression.Self self) => (9, "self");

@@ -15,7 +15,9 @@ class Program
 
         // DemoTokenizer();
 
-        DemoParser();
+        DemoDateTimeEvaluation();
+
+        // DemoParser();
     }
 
     private static void DemoParser()
@@ -59,6 +61,24 @@ class Program
                 Operator.Lte,
                 new Expression.Integer(18),
                 new Expression.MemberGet(new Expression.Self(), "Age")
+        );
+
+        ShowExpression(e, inputType, inputData);
+    }
+
+    private static void DemoDateTimeEvaluation()
+    {
+        var inputType = new ExpressionType.Record
+        {
+            ["now"] = new ExpressionType.DateTime(),
+        };
+
+        var inputData = new { now = NodaTime.LocalDateTime.FromDateTime(DateTime.Now) }.ToRecord(inputType);
+
+        var e = new Expression.Binary(
+                Operator.Add,
+                new Expression.MemberGet(new Expression.Self(), "now"),
+                new Expression.Period(NodaTime.Period.FromDays(1))
         );
 
         ShowExpression(e, inputType, inputData);

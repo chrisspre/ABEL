@@ -14,6 +14,8 @@ public static class TypeExtensions
         public string Integer() => "Integer";
 
         public string String() => "String";
+        public string DateTime() => "DateTime";
+        public string Period() => "Period";
 
         public string Record(IReadOnlyDictionary<string, string> fields)
         {

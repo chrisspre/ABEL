@@ -12,19 +12,27 @@ public abstract record Expression
     {
         Integer,
         String,
-        Binary,
         Boolean,
+        DateTime,
+        Period,
+
+        Binary,
+
+        Self,
         MemberGet,
-        Self
     }
 
     // public abstract T Fold<T>(IFold<T> fold);
     public interface IFold<T>
     {
-        T Integer(Integer integer);
-        T String(String @string);
         T Boolean(Boolean boolean);
+        T Integer(Integer value);
+        T String(String value);
+        T DateTime(DateTime value);
+        T Period(Period value);
+
         T Binary(Binary binary, T lhs, T rhs);
+
         T Self(Self self);
         T MemberGet(MemberGet get, T obj);
     }
@@ -52,6 +60,21 @@ public abstract record Expression
         public override T Fold<T>(IFold<T> fold)
         {
             return fold.String(this);
+        }
+    }
+    public record DateTime(NodaTime.LocalDateTime Value) : Expression(ExpressionKind.String)
+    {
+        public override T Fold<T>(IFold<T> fold)
+        {
+            return fold.DateTime(this);
+        }
+    }
+
+    public record Period(NodaTime.Period Value) : Expression(ExpressionKind.String)
+    {
+        public override T Fold<T>(IFold<T> fold)
+        {
+            return fold.Period(this);
         }
     }
 

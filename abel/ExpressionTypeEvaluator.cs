@@ -32,6 +32,8 @@ public static class ExpressionTypeEvaluator
         public ExpressionType String(Expression.String @string) => new ExpressionType.String();
 
         public ExpressionType Boolean(Expression.Boolean boolean) => new ExpressionType.Boolean();
+        public ExpressionType DateTime(Expression.DateTime dateTime) => new ExpressionType.DateTime();
+        public ExpressionType Period(Expression.Period period) => new ExpressionType.Period();
 
         public ExpressionType Binary(Expression.Binary binary, ExpressionType lhs, ExpressionType rhs)
         {
@@ -40,6 +42,7 @@ public static class ExpressionTypeEvaluator
                 (K.Integer, O.Mul, K.Integer) => new ExpressionType.Integer(),
 
                 (K.Integer, O.Add, K.Integer) => new ExpressionType.Integer(),
+                (K.DateTime, O.Add, K.Period) => new ExpressionType.DateTime(),
 
                 (K.Integer, O.Lt, K.Integer) => new ExpressionType.Boolean(),
                 (K.String, O.Lt, K.String) => new ExpressionType.Boolean(),
