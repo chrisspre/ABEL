@@ -9,15 +9,14 @@ class Program
 {
     private static void Main(string[] args)
     {
-        // DemoTokenizer();
-
-        DemoExpressionTrees();
+        // DemoExpressions();
 
         // DemoRecordEvaluation();
+
+        DemoTokenizer();
     }
 
-
-    private static void DemoExpressionTrees()
+    private static void DemoExpressions()
     {
         var inputType = ExpressionType.Record.Empty;
         var inputData = new Dictionary<string, object>();
