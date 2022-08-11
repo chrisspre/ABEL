@@ -13,9 +13,12 @@ public enum TokenKind
 
     // names follow unicode naming for single character tokens
     PlusSign, // https://unicodeplus.com/U+002B
+    MinusSign,
     Asterisk, // https://unicodeplus.com/U+002A
     LeftParenthesis, // https://unicodeplus.com/U+0028
-    RightParenthesis, // https://unicodeplus.com/U+0029
+    RightParenthesis, // https://unicodeplus.com/U+0029,
+    True,
+    False,
 }
 
 public sealed record Token(TokenKind Kind, string Value, (int, int) Position)

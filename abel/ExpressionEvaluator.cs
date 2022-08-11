@@ -35,6 +35,7 @@ public static class ExpressionEvaluator
         {
             Operator.Mul => (a, b) => ((int)a) * ((int)b),
             Operator.Add => (a, b) => ((int)a) + ((int)b),
+            Operator.Sub => (a, b) => ((int)a) - ((int)b),
             Operator.Lt => (a, b) => ((int)a) < ((int)b),
             Operator.Lte => (a, b) => ((int)a) <= ((int)b),
         };

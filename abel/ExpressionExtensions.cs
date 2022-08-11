@@ -38,6 +38,7 @@ public static class ExpressionExtenstions
     {
         Operator.Mul => ("*", 8),
         Operator.Add => ("+", 7),
+        Operator.Sub => ("-", 7),
         Operator.Lt => ("<", 4),
         Operator.Lte => ("<=", 4),
     };

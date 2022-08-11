@@ -20,13 +20,15 @@ public class Tokenizer
         this.TokenNameMap = Enum.GetValues<TokenKind>().ToDictionary(k => Enum.GetName<TokenKind>(k)!, k => k);
         this.Tokens = new (string Name, string Regex)[] {
             ("Whitespace", "\\s+"),
+            ("True", "true"),
+            ("False", "false"),
             ("Ident", "[_a-zA-Z][_a-zA-Z0-9]*"),
             ("Integer", "[0-9]+"),
             ("PlusSign", "[+]"),
             ("Asterisk", "[*]"),
             ("LeftParenthesis", "[(]"),
             ("RightParenthesis", "[)]"),
-            ("Unkown", ".+"),
+            ("Unknown", ".+"),
         };
 
         var regex = "(" + string.Join("|", from token in Tokens select $"(?<{token.Name}>{token.Regex})") + ")";

@@ -13,7 +13,20 @@ class Program
 
         // DemoRecordEvaluation();
 
-        DemoTokenizer();
+        // DemoTokenizer();
+
+        DemoParser();
+    }
+
+    private static void DemoParser()
+    {
+        var input = "1 * 2 * 3 + 1";
+        Console.WriteLine("input: {0}", input);
+        if (Parser.TryParse(input, out var expr))
+        {
+            Console.WriteLine("expr:  {0}", expr);
+            Console.WriteLine("expr:  {0}", expr.Display());
+        }
     }
 
     private static void DemoExpressions()

@@ -1,7 +1,7 @@
 namespace abel;
 
 
-public enum Operator { Add, Mul, Lt, Lte }
+public enum Operator { Add, Sub, Mul, Lt, Lte }
 
 
 public abstract record Expression
